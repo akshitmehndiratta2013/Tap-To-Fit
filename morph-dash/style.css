@@ -1,0 +1,392 @@
+/* ========================================
+   MORPH DASH - MAIN STYLESHEET
+   Neon Cyberpunk Theme
+   ======================================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+    background: linear-gradient(135deg, #050008 0%, #0a0015 100%);
+    font-family: 'Arial', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#game-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* ========================================
+   MENU STYLES
+   ======================================== */
+
+.menu-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(5, 0, 8, 0.98), rgba(10, 0, 21, 0.98));
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.menu-title {
+    font-size: 72px;
+    font-weight: 900;
+    text-align: center;
+    margin-bottom: 10px;
+    background: linear-gradient(135deg, #00d4ff, #9d00ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
+    letter-spacing: 3px;
+    animation: titleGlow 2s ease-in-out infinite;
+}
+
+@keyframes titleGlow {
+    0%, 100% {
+        filter: drop-shadow(0 0 10px rgba(0, 212, 255, 0.5));
+    }
+    50% {
+        filter: drop-shadow(0 0 20px rgba(157, 0, 255, 0.8));
+    }
+}
+
+.menu-subtitle {
+    font-size: 18px;
+    color: #9d00ff;
+    margin-bottom: 50px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-shadow: 0 0 15px rgba(157, 0, 255, 0.6);
+}
+
+.menu-button {
+    padding: 16px 40px;
+    margin: 12px 0;
+    font-size: 18px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border: 2px solid #00d4ff;
+    background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(157, 0, 255, 0.1));
+    color: #00d4ff;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 220px;
+    text-align: center;
+    box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
+}
+
+.menu-button:hover {
+    background: linear-gradient(135deg, rgba(0, 212, 255, 0.3), rgba(157, 0, 255, 0.3));
+    box-shadow: 0 0 25px rgba(0, 212, 255, 0.6), 0 0 40px rgba(157, 0, 255, 0.4);
+    transform: translateY(-3px);
+}
+
+.menu-button:active {
+    transform: translateY(-1px);
+}
+
+/* ========================================
+   HUD STYLES
+   ======================================== */
+
+.hud-container {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    right: 20px;
+    z-index: 500;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'Courier New', monospace;
+}
+
+.hud-score {
+    font-size: 32px;
+    font-weight: bold;
+    color: #ffff00;
+    text-shadow: 0 0 15px rgba(255, 255, 0, 0.8);
+    letter-spacing: 1px;
+}
+
+.hud-combo {
+    font-size: 28px;
+    font-weight: bold;
+    color: #ff6b00;
+    text-shadow: 0 0 15px rgba(255, 107, 0, 0.8);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.hud-high-score {
+    font-size: 18px;
+    color: #00ff00;
+    text-shadow: 0 0 10px rgba(0, 255, 0, 0.6);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.pause-btn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 10px 20px;
+    background: linear-gradient(135deg, #00d4ff, #9d00ff);
+    color: #050008;
+    border: 2px solid #00d4ff;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    text-transform: uppercase;
+    z-index: 400;
+    transition: all 0.3s ease;
+}
+
+.pause-btn:hover {
+    box-shadow: 0 0 20px rgba(0, 212, 255, 0.6);
+    transform: scale(1.05);
+}
+
+/* ========================================
+   PAUSE OVERLAY
+   ======================================== */
+
+.pause-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(5, 0, 8, 0.9);
+    z-index: 900;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.3s ease;
+}
+
+.pause-content {
+    text-align: center;
+}
+
+.pause-content h2 {
+    font-size: 64px;
+    color: #00d4ff;
+    margin-bottom: 40px;
+    text-shadow: 0 0 20px rgba(0, 212, 255, 0.8);
+    letter-spacing: 2px;
+}
+
+.pause-content button {
+    padding: 14px 35px;
+    margin: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    text-transform: uppercase;
+    border: 2px solid #00d4ff;
+    background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(157, 0, 255, 0.1));
+    color: #00d4ff;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 150px;
+}
+
+.pause-content button:hover {
+    background: linear-gradient(135deg, rgba(0, 212, 255, 0.3), rgba(157, 0, 255, 0.3));
+    box-shadow: 0 0 20px rgba(0, 212, 255, 0.6);
+}
+
+/* ========================================
+   GAME OVER STYLES
+   ======================================== */
+
+.game-over-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(5, 0, 8, 0.95), rgba(10, 0, 21, 0.95));
+    z-index: 800;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.5s ease-out;
+}
+
+.game-over-content {
+    text-align: center;
+    animation: slideIn 0.5s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.game-over-content h2 {
+    font-size: 72px;
+    color: #ff0000;
+    margin-bottom: 30px;
+    text-shadow: 0 0 30px rgba(255, 0, 0, 0.8);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+.score-display {
+    margin: 20px 0;
+}
+
+.score-label {
+    font-size: 18px;
+    color: #9d00ff;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 5px;
+}
+
+.score-value {
+    font-size: 48px;
+    font-weight: bold;
+    color: #ffff00;
+    text-shadow: 0 0 20px rgba(255, 255, 0, 0.8);
+}
+
+.combo-display {
+    margin: 15px 0;
+}
+
+.combo-value {
+    font-size: 42px;
+    font-weight: bold;
+    color: #ff6b00;
+    text-shadow: 0 0 20px rgba(255, 107, 0, 0.8);
+}
+
+.game-over-buttons {
+    margin-top: 40px;
+}
+
+.game-over-buttons button {
+    padding: 15px 40px;
+    margin: 10px;
+    font-size: 18px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border: 2px solid #00d4ff;
+    background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(157, 0, 255, 0.1));
+    color: #00d4ff;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 180px;
+}
+
+.game-over-buttons button:hover {
+    background: linear-gradient(135deg, rgba(0, 212, 255, 0.3), rgba(157, 0, 255, 0.3));
+    box-shadow: 0 0 25px rgba(0, 212, 255, 0.6);
+    transform: translateY(-3px);
+}
+
+.revive-btn {
+    border-color: #00ff00 !important;
+    color: #00ff00 !important;
+}
+
+.revive-btn:hover {
+    box-shadow: 0 0 25px rgba(0, 255, 0, 0.6) !important;
+}
+
+/* ========================================
+   RESPONSIVE DESIGN
+   ======================================== */
+
+@media (max-width: 768px) {
+    .menu-title {
+        font-size: 48px;
+    }
+
+    .menu-button {
+        padding: 12px 30px;
+        font-size: 16px;
+        min-width: 180px;
+    }
+
+    .hud-score {
+        font-size: 24px;
+    }
+
+    .hud-combo {
+        font-size: 20px;
+    }
+
+    .game-over-content h2 {
+        font-size: 48px;
+    }
+
+    .score-value {
+        font-size: 36px;
+    }
+
+    .combo-value {
+        font-size: 32px;
+    }
+}
+
+@media (max-width: 480px) {
+    .menu-title {
+        font-size: 36px;
+    }
+
+    .menu-button {
+        padding: 10px 20px;
+        font-size: 14px;
+        min-width: 150px;
+    }
+
+    .pause-btn {
+        padding: 8px 15px;
+        font-size: 12px;
+    }
+}
