@@ -18,20 +18,22 @@
 <body>
     <div id="game-container"></div>
     
-    <!-- Core Game Files -->
+    <!-- Config and Constants (must be first) -->
     <script src="js/config.js"></script>
+    
+    <!-- Utility Managers -->
     <script src="js/utils/audioManager.js"></script>
     <script src="js/utils/particleManager.js"></script>
     <script src="js/utils/scoreManager.js"></script>
     
-    <!-- Scene Files -->
+    <!-- Scene Classes (must be before game initialization) -->
     <script src="js/scenes/BootScene.js"></script>
     <script src="js/scenes/MenuScene.js"></script>
     <script src="js/scenes/GameScene.js"></script>
     <script src="js/scenes/GameOverScene.js"></script>
     <script src="js/scenes/PauseScene.js"></script>
     
-    <!-- Main Entry Point -->
+    <!-- Main Entry Point (must be last) -->
     <script src="js/main.js"></script>
 </body>
 </html>
