@@ -32,6 +32,7 @@ const GAME_SETTINGS = {
     difficultyIncrement: 0.05,
     maxDifficulty: 15,
     scorePerDifficultyLevel: 2000,
+    difficultyScaling: 0.95,
     
     // Combo
     comboMultiplier: 1.15,
