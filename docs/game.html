@@ -1,0 +1,1695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Morph Dash - Hypercasual Shape Shifting Game for Poki">
+    <meta name="theme-color" content="#050008">
+    <title>Morph Dash - Play Now</title>
+    <style>
+        /* ========================================
+           MORPH DASH - MAIN STYLESHEET
+           Neon Cyberpunk Theme
+           ======================================== */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #050008 0%, #0a0015 100%);
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #game-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* ========================================
+           MENU STYLES
+           ======================================== */
+
+        .menu-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(5, 0, 8, 0.98), rgba(10, 0, 21, 0.98));
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .menu-title {
+            font-size: 72px;
+            font-weight: 900;
+            text-align: center;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #00d4ff, #9d00ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
+            letter-spacing: 3px;
+            animation: titleGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes titleGlow {
+            0%, 100% {
+                filter: drop-shadow(0 0 10px rgba(0, 212, 255, 0.5));
+            }
+            50% {
+                filter: drop-shadow(0 0 20px rgba(157, 0, 255, 0.8));
+            }
+        }
+
+        .menu-subtitle {
+            font-size: 18px;
+            color: #9d00ff;
+            margin-bottom: 50px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 15px rgba(157, 0, 255, 0.6);
+        }
+
+        .menu-button {
+            padding: 16px 40px;
+            margin: 12px 0;
+            font-size: 18px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: 2px solid #00d4ff;
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(157, 0, 255, 0.1));
+            color: #00d4ff;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 220px;
+            text-align: center;
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
+        }
+
+        .menu-button:hover {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.3), rgba(157, 0, 255, 0.3));
+            box-shadow: 0 0 25px rgba(0, 212, 255, 0.6), 0 0 40px rgba(157, 0, 255, 0.4);
+            transform: translateY(-3px);
+        }
+
+        .menu-button:active {
+            transform: translateY(-1px);
+        }
+
+        /* ========================================
+           HUD STYLES
+           ======================================== */
+
+        .hud-container {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            z-index: 500;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'Courier New', monospace;
+        }
+
+        .hud-score {
+            font-size: 32px;
+            font-weight: bold;
+            color: #ffff00;
+            text-shadow: 0 0 15px rgba(255, 255, 0, 0.8);
+            letter-spacing: 1px;
+        }
+
+        .hud-combo {
+            font-size: 28px;
+            font-weight: bold;
+            color: #ff6b00;
+            text-shadow: 0 0 15px rgba(255, 107, 0, 0.8);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .hud-high-score {
+            font-size: 18px;
+            color: #00ff00;
+            text-shadow: 0 0 10px rgba(0, 255, 0, 0.6);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .pause-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #00d4ff, #9d00ff);
+            color: #050008;
+            border: 2px solid #00d4ff;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            z-index: 400;
+            transition: all 0.3s ease;
+        }
+
+        .pause-btn:hover {
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.6);
+            transform: scale(1.05);
+        }
+
+        /* ========================================
+           PAUSE OVERLAY
+           ======================================== */
+
+        .pause-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(5, 0, 8, 0.9);
+            z-index: 900;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .pause-content {
+            text-align: center;
+        }
+
+        .pause-content h2 {
+            font-size: 64px;
+            color: #00d4ff;
+            margin-bottom: 40px;
+            text-shadow: 0 0 20px rgba(0, 212, 255, 0.8);
+            letter-spacing: 2px;
+        }
+
+        .pause-content button {
+            padding: 14px 35px;
+            margin: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            text-transform: uppercase;
+            border: 2px solid #00d4ff;
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(157, 0, 255, 0.1));
+            color: #00d4ff;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 150px;
+        }
+
+        .pause-content button:hover {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.3), rgba(157, 0, 255, 0.3));
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.6);
+        }
+
+        /* ========================================
+           GAME OVER STYLES
+           ======================================== */
+
+        .game-over-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(5, 0, 8, 0.95), rgba(10, 0, 21, 0.95));
+            z-index: 800;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .game-over-content {
+            text-align: center;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .game-over-content h2 {
+            font-size: 72px;
+            color: #ff0000;
+            margin-bottom: 30px;
+            text-shadow: 0 0 30px rgba(255, 0, 0, 0.8);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .score-display {
+            margin: 20px 0;
+        }
+
+        .score-label {
+            font-size: 18px;
+            color: #9d00ff;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .score-value {
+            font-size: 48px;
+            font-weight: bold;
+            color: #ffff00;
+            text-shadow: 0 0 20px rgba(255, 255, 0, 0.8);
+        }
+
+        .combo-display {
+            margin: 15px 0;
+        }
+
+        .combo-value {
+            font-size: 42px;
+            font-weight: bold;
+            color: #ff6b00;
+            text-shadow: 0 0 20px rgba(255, 107, 0, 0.8);
+        }
+
+        .game-over-buttons {
+            margin-top: 40px;
+        }
+
+        .game-over-buttons button {
+            padding: 15px 40px;
+            margin: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: 2px solid #00d4ff;
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(157, 0, 255, 0.1));
+            color: #00d4ff;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 180px;
+        }
+
+        .game-over-buttons button:hover {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.3), rgba(157, 0, 255, 0.3));
+            box-shadow: 0 0 25px rgba(0, 212, 255, 0.6);
+            transform: translateY(-3px);
+        }
+
+        .revive-btn {
+            border-color: #00ff00 !important;
+            color: #00ff00 !important;
+        }
+
+        .revive-btn:hover {
+            box-shadow: 0 0 25px rgba(0, 255, 0, 0.6) !important;
+        }
+
+        /* ========================================
+           RESPONSIVE DESIGN
+           ======================================== */
+
+        @media (max-width: 768px) {
+            .menu-title {
+                font-size: 48px;
+            }
+
+            .menu-button {
+                padding: 12px 30px;
+                font-size: 16px;
+                min-width: 180px;
+            }
+
+            .hud-score {
+                font-size: 24px;
+            }
+
+            .hud-combo {
+                font-size: 20px;
+            }
+
+            .game-over-content h2 {
+                font-size: 48px;
+            }
+
+            .score-value {
+                font-size: 36px;
+            }
+
+            .combo-value {
+                font-size: 32px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .menu-title {
+                font-size: 36px;
+            }
+
+            .menu-button {
+                padding: 10px 20px;
+                font-size: 14px;
+                min-width: 150px;
+            }
+
+            .pause-btn {
+                padding: 8px 15px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container"></div>
+
+    <!-- Phaser 3 -->
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.js"></script>
+    
+    <!-- Poki SDK -->
+    <script src="https://api.poki.com/api/poki-sdk.js"></script>
+
+    <script>
+        /* ========================================
+           MORPH DASH - GAME CONFIGURATION
+           Constants, Settings, and Shape Definitions
+           ======================================== */
+
+        const GAME_CONFIG = {
+            type: Phaser.AUTO,
+            parent: 'game-container',
+            backgroundColor: '#050008',
+            scale: {
+                mode: Phaser.Scale.FIT,
+                autoCenter: Phaser.Scale.CENTER_BOTH,
+                width: 1280,
+                height: 720,
+                expandParent: true,
+                fullscreenTarget: 'game-container'
+            },
+            physics: {
+                default: 'arcade',
+                arcade: {
+                    gravity: { y: 0 },
+                    debug: false
+                }
+            },
+            scene: [BootScene, MenuScene, GameScene, GameOverScene, PauseScene]
+        };
+
+        // Game Settings
+        const GAME_SETTINGS = {
+            // Difficulty
+            initialDifficulty: 1,
+            difficultyIncrement: 0.05,
+            maxDifficulty: 15,
+            scorePerDifficultyLevel: 2000,
+            difficultyScaling: 0.95,
+            
+            // Combo
+            comboMultiplier: 1.15,
+            perfectBonus: 50,
+            perfectWindow: 0.15, // 15% of hole width
+            
+            // Scoring
+            baseScore: 100,
+            
+            // Colors
+            colors: {
+                background: '#050008',
+                darkBg: '#0a0015',
+                cyan: '#00d4ff',
+                purple: '#9d00ff',
+                pink: '#ff006b',
+                yellow: '#ffff00',
+                orange: '#ff6b00',
+                green: '#00ff00',
+                blue: '#0099ff'
+            },
+            
+            // Animation
+            morphDuration: 200,
+            crashDuration: 400,
+            screenShakeDuration: 300,
+            pulseInterval: 5
+        };
+
+        // Player configuration
+        const PLAYER_CONFIG = {
+            startX: 640,
+            startY: 600,
+            size: 40,
+            baseSpeed: 600,
+            maxSpeed: 1500,
+            speedIncrement: 25,
+            acceleration: 8,
+            speedUpPerScore: 50,
+            trailParticleCount: 3,
+            glowRadius: 60,
+            shadowDistance: 8
+        };
+
+        // Wall configuration
+        const WALL_CONFIG = {
+            width: 1280,
+            height: 100,
+            minSpawnRate: 0.6,
+            maxSpawnRate: 3,
+            initialSpawnRate: 2.8,
+            holeWidth: 120,
+            holeVariation: 40,
+            holeMinSize: 80,
+            holeMaxSize: 150,
+            speed: 0,
+            acceleration: 8
+        };
+
+        // Shapes definition
+        const SHAPES = {
+            CIRCLE: 'circle',
+            SQUARE: 'square',
+            TRIANGLE: 'triangle',
+            HEXAGON: 'hexagon',
+            STAR: 'star'
+        };
+
+        const SHAPE_ORDER = [
+            SHAPES.CIRCLE,
+            SHAPES.SQUARE,
+            SHAPES.TRIANGLE,
+            SHAPES.HEXAGON,
+            SHAPES.STAR
+        ];
+
+        // Shape drawing functions
+        const SHAPE_DEFINITIONS = {
+            circle: (graphics, x, y, size, color) => {
+                graphics.fillStyle(color, 1);
+                graphics.fillCircleShape(new Phaser.Geom.Circle(x, y, size / 2));
+            },
+            
+            square: (graphics, x, y, size, color) => {
+                graphics.fillStyle(color, 1);
+                graphics.fillRect(x - size / 2, y - size / 2, size, size);
+            },
+            
+            triangle: (graphics, x, y, size, color) => {
+                graphics.fillStyle(color, 1);
+                const triangle = new Phaser.Geom.Triangle(
+                    x, y - size / 2,
+                    x - size / 2, y + size / 2,
+                    x + size / 2, y + size / 2
+                );
+                graphics.fillTriangleShape(triangle);
+            },
+            
+            hexagon: (graphics, x, y, size, color) => {
+                graphics.fillStyle(color, 1);
+                const hexagon = Phaser.Geom.Polygon.CreateRegular(6, x, y, size / 2);
+                graphics.fillPoints(hexagon.points);
+            },
+            
+            star: (graphics, x, y, size, color) => {
+                graphics.fillStyle(color, 1);
+                const points = [];
+                const outerRadius = size / 2;
+                const innerRadius = size / 4;
+                
+                for (let i = 0; i < 10; i++) {
+                    const radius = i % 2 === 0 ? outerRadius : innerRadius;
+                    const angle = (i * Math.PI) / 5 - Math.PI / 2;
+                    points.push({
+                        x: x + radius * Math.cos(angle),
+                        y: y + radius * Math.sin(angle)
+                    });
+                }
+                
+                graphics.fillPoints(points);
+            }
+        };
+
+        // Shape collision detection
+        function checkShapeCollision(shape, x, y, size, holeX, holeY, holeWidth, holeHeight) {
+            const shapeRadius = size / 2;
+            const holeCenterX = holeX + holeWidth / 2;
+            const holeCenterY = holeY + holeHeight / 2;
+            
+            switch (shape) {
+                case SHAPES.CIRCLE:
+                    return Phaser.Geom.Intersects.CircleToRectangle(
+                        new Phaser.Geom.Circle(x, y, shapeRadius),
+                        new Phaser.Geom.Rectangle(holeX, holeY, holeWidth, holeHeight)
+                    );
+                
+                case SHAPES.SQUARE:
+                case SHAPES.TRIANGLE:
+                case SHAPES.HEXAGON:
+                case SHAPES.STAR:
+                    // Bounding box check for complex shapes
+                    const shapeBox = new Phaser.Geom.Rectangle(x - shapeRadius, y - shapeRadius, size, size);
+                    const holeBox = new Phaser.Geom.Rectangle(holeX, holeY, holeWidth, holeHeight);
+                    return !Phaser.Geom.Intersects.RectangleToRectangle(shapeBox, holeBox);
+                
+                default:
+                    return false;
+            }
+        }
+
+        // Particle effects
+        const PARTICLE_PRESETS = {
+            success: {
+                speed: { min: 100, max: 300 },
+                scale: { start: 1, end: 0 },
+                alpha: { start: 1, end: 0 },
+                lifespan: 600,
+                gravityY: -200
+            },
+            crash: {
+                speed: { min: 200, max: 400 },
+                scale: { start: 1.5, end: 0 },
+                alpha: { start: 1, end: 0 },
+                lifespan: 400,
+                gravityY: 300
+            },
+            trail: {
+                speed: { min: 50, max: 150 },
+                scale: { start: 0.8, end: 0 },
+                alpha: { start: 0.8, end: 0 },
+                lifespan: 300,
+                gravityY: 0
+            },
+            perfect: {
+                speed: { min: 150, max: 350 },
+                scale: { start: 1.2, end: 0 },
+                alpha: { start: 1, end: 0 },
+                lifespan: 700,
+                gravityY: -300,
+                emitZone: { type: 'circle', source: new Phaser.Geom.Circle(0, 0, 50) }
+            }
+        };
+
+        // Audio settings
+        const AUDIO_SETTINGS = {
+            masterVolume: 0.5,
+            soundVolume: 0.7,
+            musicVolume: 0.4,
+            enabled: true
+        };
+
+        /* ========================================
+           AUDIO MANAGER
+           Web Audio API for procedural sounds
+           ======================================== */
+
+        class AudioManager {
+            constructor() {
+                this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                this.masterVolume = AUDIO_SETTINGS.masterVolume;
+                this.soundVolume = AUDIO_SETTINGS.soundVolume;
+                this.enabled = AUDIO_SETTINGS.enabled;
+                this.masterGain = this.audioContext.createGain();
+                this.masterGain.connect(this.audioContext.destination);
+                this.masterGain.gain.value = this.masterVolume;
+            }
+
+            playSound(frequency, duration, type = 'sine') {
+                if (!this.enabled) return;
+
+                const now = this.audioContext.currentTime;
+                const osc = this.audioContext.createOscillator();
+                const gain = this.audioContext.createGain();
+
+                osc.type = type;
+                osc.frequency.setValueAtTime(frequency, now);
+                osc.connect(gain);
+                gain.connect(this.masterGain);
+
+                gain.gain.setValueAtTime(this.soundVolume * 0.3, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + duration);
+
+                osc.start(now);
+                osc.stop(now + duration);
+            }
+
+            playMorphSound() {
+                this.playSound(400, 0.1);
+            }
+
+            playSuccessSound() {
+                const now = this.audioContext.currentTime;
+                const frequencies = [523, 659, 784]; // C, E, G
+                frequencies.forEach((freq, i) => {
+                    setTimeout(() => this.playSound(freq, 0.15), i * 50);
+                });
+            }
+
+            playPerfectSound() {
+                this.playSound(800, 0.08);
+                this.playSound(600, 0.08, 'sine');
+            }
+
+            playComboSound(comboLevel) {
+                const baseFreq = 600;
+                const frequency = baseFreq + (comboLevel * 30);
+                this.playSound(frequency, 0.12);
+            }
+
+            playCrashSound() {
+                const now = this.audioContext.currentTime;
+                const osc = this.audioContext.createOscillator();
+                const gain = this.audioContext.createGain();
+
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(200, now);
+                osc.frequency.exponentialRampToValueAtTime(50, now + 0.3);
+                osc.connect(gain);
+                gain.connect(this.masterGain);
+
+                gain.gain.setValueAtTime(this.soundVolume * 0.5, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+
+                osc.start(now);
+                osc.stop(now + 0.3);
+            }
+
+            playClickSound() {
+                this.playSound(1000, 0.05, 'square');
+            }
+
+            playMenuSound() {
+                const now = this.audioContext.currentTime;
+                [523, 659].forEach((freq, i) => {
+                    setTimeout(() => this.playSound(freq, 0.1), i * 100);
+                });
+            }
+
+            setMasterVolume(volume) {
+                this.masterVolume = Phaser.Math.Clamp(volume, 0, 1);
+                this.masterGain.gain.value = this.masterVolume;
+            }
+
+            getMasterVolume() {
+                return this.masterVolume;
+            }
+
+            setEnabled(enabled) {
+                this.enabled = enabled;
+            }
+
+            isEnabled() {
+                return this.enabled;
+            }
+        }
+
+        // Global instance
+        const audioManager = new AudioManager();
+
+        /* ========================================
+           PARTICLE MANAGER
+           Custom particle system for effects
+           ======================================== */
+
+        class ParticleManager {
+            constructor(scene) {
+                this.scene = scene;
+                this.particles = [];
+                this.maxParticles = 500;
+            }
+
+            emit(x, y, count, preset = 'success', color = 0x00d4ff) {
+                const config = PARTICLE_PRESETS[preset] || PARTICLE_PRESETS.success;
+
+                for (let i = 0; i < count; i++) {
+                    const angle = Phaser.Math.Between(0, 360);
+                    const speed = Phaser.Math.Between(config.speed.min, config.speed.max);
+                    const velocity = new Phaser.Math.Vector2(
+                        Math.cos(Phaser.Math.DegToRad(angle)) * speed,
+                        Math.sin(Phaser.Math.DegToRad(angle)) * speed
+                    );
+
+                    const particle = {
+                        x: x,
+                        y: y,
+                        vx: velocity.x,
+                        vy: velocity.y,
+                        life: config.lifespan,
+                        maxLife: config.lifespan,
+                        scale: config.scale.start,
+                        alpha: config.alpha.start,
+                        color: color,
+                        scaleEnd: config.scale.end,
+                        alphaEnd: config.alpha.end,
+                        gravityY: config.gravityY || 0
+                    };
+
+                    this.particles.push(particle);
+                }
+
+                // Limit particles
+                if (this.particles.length > this.maxParticles) {
+                    this.particles = this.particles.slice(-this.maxParticles);
+                }
+            }
+
+            update(deltaTime) {
+                const dt = deltaTime / 1000; // Convert to seconds
+
+                for (let i = this.particles.length - 1; i >= 0; i--) {
+                    const p = this.particles[i];
+                    p.life -= deltaTime;
+
+                    if (p.life <= 0) {
+                        this.particles.splice(i, 1);
+                        continue;
+                    }
+
+                    // Update position
+                    p.x += p.vx * dt;
+                    p.y += p.vy * dt;
+                    p.vy += p.gravityY * dt; // Apply gravity
+
+                    // Update scale and alpha
+                    const progress = 1 - (p.life / p.maxLife);
+                    p.scale = Phaser.Math.Interpolation.Linear(
+                        [p.scale - (p.scale - p.scaleEnd) * progress],
+                        0
+                    )[0];
+                    p.alpha = Phaser.Math.Interpolation.Linear(
+                        [p.alpha - (p.alpha - p.alphaEnd) * progress],
+                        0
+                    )[0];
+                }
+            }
+
+            render(graphics) {
+                graphics.clear();
+
+                for (const p of this.particles) {
+                    graphics.fillStyle(p.color, p.alpha);
+                    graphics.fillCircle(p.x, p.y, p.scale * 4);
+                }
+            }
+
+            clear() {
+                this.particles = [];
+            }
+
+            getCount() {
+                return this.particles.length;
+            }
+        }
+
+        /* ========================================
+           SCORE MANAGER
+           localStorage-based high score persistence
+           ======================================== */
+
+        class ScoreManager {
+            constructor() {
+                this.storageKey = 'morph-dash-scores';
+                this.statsKey = 'morph-dash-stats';
+                this.maxScores = 100;
+                this.scores = this.loadScores();
+                this.stats = this.loadStats();
+            }
+
+            addScore(score, combo, shapes) {
+                const scoreData = {
+                    score: score,
+                    combo: combo,
+                    shapesDestroyed: shapes,
+                    date: new Date().toISOString(),
+                    timestamp: Date.now()
+                };
+
+                this.scores.unshift(scoreData);
+                if (this.scores.length > this.maxScores) {
+                    this.scores.pop();
+                }
+
+                // Update stats
+                this.stats.totalGames++;
+                this.stats.totalScore += score;
+                if (score > this.stats.highScore) {
+                    this.stats.highScore = score;
+                }
+                if (combo > this.stats.bestCombo) {
+                    this.stats.bestCombo = combo;
+                }
+                this.stats.lastPlayDate = new Date().toISOString();
+
+                this.saveScores();
+                this.saveStats();
+
+                return this.scores[0];
+            }
+
+            getHighScore() {
+                return this.stats.highScore || 0;
+            }
+
+            getTopScores(count = 10) {
+                return this.scores.slice(0, count);
+            }
+
+            getAllScores() {
+                return [...this.scores];
+            }
+
+            getFormattedStats() {
+                return {
+                    highScore: this.stats.highScore || 0,
+                    totalGames: this.stats.totalGames || 0,
+                    totalScore: this.stats.totalScore || 0,
+                    bestCombo: this.stats.bestCombo || 0,
+                    averageScore: this.stats.totalGames > 0 ? Math.round(this.stats.totalScore / this.stats.totalGames) : 0,
+                    lastPlayDate: this.stats.lastPlayDate || 'Never'
+                };
+            }
+
+            saveScores() {
+                try {
+                    localStorage.setItem(this.storageKey, JSON.stringify(this.scores));
+                } catch (e) {
+                    console.warn('Could not save scores to localStorage:', e);
+                }
+            }
+
+            loadScores() {
+                try {
+                    const data = localStorage.getItem(this.storageKey);
+                    return data ? JSON.parse(data) : [];
+                } catch (e) {
+                    console.warn('Could not load scores from localStorage:', e);
+                    return [];
+                }
+            }
+
+            saveStats() {
+                try {
+                    localStorage.setItem(this.statsKey, JSON.stringify(this.stats));
+                } catch (e) {
+                    console.warn('Could not save stats to localStorage:', e);
+                }
+            }
+
+            loadStats() {
+                try {
+                    const data = localStorage.getItem(this.statsKey);
+                    if (data) {
+                        return JSON.parse(data);
+                    }
+                } catch (e) {
+                    console.warn('Could not load stats from localStorage:', e);
+                }
+
+                return {
+                    highScore: 0,
+                    totalGames: 0,
+                    totalScore: 0,
+                    bestCombo: 0,
+                    lastPlayDate: null
+                };
+            }
+
+            reset() {
+                this.scores = [];
+                this.stats = {
+                    highScore: 0,
+                    totalGames: 0,
+                    totalScore: 0,
+                    bestCombo: 0,
+                    lastPlayDate: null
+                };
+                this.saveScores();
+                this.saveStats();
+            }
+        }
+
+        // Global instance
+        const scoreManager = new ScoreManager();
+
+        /* ========================================
+           BOOT SCENE
+           Poki SDK initialization and preload
+           ======================================== */
+
+        class BootScene extends Phaser.Scene {
+            constructor() {
+                super('Boot');
+            }
+
+            preload() {
+                console.log('Boot Scene: Initializing...');
+            }
+
+            create() {
+                this.initPokiSDK();
+                this.scene.start('Menu');
+            }
+
+            initPokiSDK() {
+                if (typeof window.PokiSDK !== 'undefined') {
+                    try {
+                        PokiSDK.init();
+                        console.log('Poki SDK initialized');
+
+                        if (PokiSDK.onAdStart) {
+                            PokiSDK.onAdStart(() => {
+                                console.log('Ad started');
+                                const gameScene = this.scene.get('Game');
+                                if (gameScene && gameScene.isActive()) {
+                                    this.scene.pause('Game');
+                                }
+                            });
+                        }
+
+                        if (PokiSDK.onAdFinish) {
+                            PokiSDK.onAdFinish(() => {
+                                console.log('Ad finished');
+                                const gameScene = this.scene.get('Game');
+                                if (gameScene && gameScene.isPaused()) {
+                                    this.scene.resume('Game');
+                                }
+                            });
+                        }
+                    } catch (error) {
+                        console.warn('Poki SDK not available:', error);
+                    }
+                } else {
+                    console.log('Poki SDK not loaded (local testing)');
+                }
+            }
+        }
+
+        /* ========================================
+           MENU SCENE
+           Main menu UI and navigation
+           ======================================== */
+
+        class MenuScene extends Phaser.Scene {
+            constructor() {
+                super('Menu');
+            }
+
+            create() {
+                audioManager.playMenuSound();
+                this.createBackground();
+                this.createMenuUI();
+            }
+
+            createBackground() {
+                const graphics = this.make.graphics({ x: 0, y: 0, add: false });
+                const width = this.cameras.main.width;
+                const height = this.cameras.main.height;
+
+                graphics.fillStyle(0x050008, 1);
+                graphics.fillRect(0, 0, width, height);
+
+                graphics.lineStyle(1, 0x9d00ff, 0.15);
+                const gridSize = 60;
+                for (let x = 0; x < width; x += gridSize) {
+                    graphics.beginPath();
+                    graphics.moveTo(x, 0);
+                    graphics.lineTo(x, height);
+                    graphics.strokePath();
+                }
+                for (let y = 0; y < height; y += gridSize) {
+                    graphics.beginPath();
+                    graphics.moveTo(0, y);
+                    graphics.lineTo(width, y);
+                    graphics.strokePath();
+                }
+
+                graphics.generateTexture('menuBg', width, height);
+                graphics.destroy();
+
+                const bg = this.add.image(width / 2, height / 2, 'menuBg');
+                bg.setDepth(0);
+            }
+
+            createMenuUI() {
+                const existingMenu = document.querySelector('.menu-container');
+                if (existingMenu) existingMenu.remove();
+
+                const menuDiv = document.createElement('div');
+                menuDiv.className = 'menu-container';
+                menuDiv.innerHTML = `
+                    <h1 class="menu-title">MORPH DASH</h1>
+                    <p class="menu-subtitle">Shape Shifting Arcade Action</p>
+                    
+                    <button class="menu-button" id="playBtn">PLAY NOW</button>
+                    <button class="menu-button" id="statsBtn">STATISTICS</button>
+                    <button class="menu-button" id="settingsBtn">SETTINGS</button>
+                `;
+                document.body.appendChild(menuDiv);
+
+                document.getElementById('playBtn').addEventListener('click', () => {
+                    audioManager.playClickSound();
+                    menuDiv.remove();
+                    
+                    if (window.PokiSDK && window.PokiSDK.gameplayStart) {
+                        window.PokiSDK.gameplayStart();
+                    }
+                    
+                    this.scene.start('Game');
+                });
+
+                document.getElementById('statsBtn').addEventListener('click', () => {
+                    audioManager.playClickSound();
+                    this.showStats(menuDiv);
+                });
+
+                document.getElementById('settingsBtn').addEventListener('click', () => {
+                    audioManager.playClickSound();
+                    this.showSettings(menuDiv);
+                });
+            }
+
+            showStats(menuDiv) {
+                const stats = scoreManager.getFormattedStats();
+                const topScores = scoreManager.getTopScores(5);
+
+                const statsDiv = document.createElement('div');
+                statsDiv.style.cssText = `
+                    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                    background: rgba(5,0,8,0.95); z-index: 300;
+                    display: flex; flex-direction: column; justify-content: center; align-items: center;
+                    overflow-y: auto; padding: 20px;
+                `;
+                
+                statsDiv.innerHTML = `
+                    <h2 style="color: #00d4ff; font-size: 36px; margin-bottom: 30px; text-shadow: 0 0 20px rgba(0,212,255,0.8);">STATISTICS</h2>
+                    
+                    <div style="background: rgba(0,212,255,0.05); border: 2px solid #9d00ff; border-radius: 12px; padding: 20px; margin-bottom: 30px; text-align: center; max-width: 400px;">
+                        <div style="margin: 10px 0; color: #00d4ff;">
+                            <span style="font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">High Score:</span>
+                            <span style="font-size: 28px; font-weight: bold; color: #ffff00; text-shadow: 0 0 10px rgba(255,255,0,0.8);"> ${stats.highScore}</span>
+                        </div>
+                        <div style="margin: 10px 0; color: #00d4ff;">
+                            <span style="font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">Games:</span>
+                            <span style="font-size: 24px; font-weight: bold; color: #00d4ff;"> ${stats.totalGames}</span>
+                        </div>
+                        <div style="margin: 10px 0; color: #00d4ff;">
+                            <span style="font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">Best Combo:</span>
+                            <span style="font-size: 24px; font-weight: bold; color: #ff6b00;"> ${stats.bestCombo}x</span>
+                        </div>
+                        <div style="margin: 10px 0; color: #00d4ff;">
+                            <span style="font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">Average Score:</span>
+                            <span style="font-size: 24px; font-weight: bold; color: #00ff00;"> ${stats.averageScore}</span>
+                        </div>
+                    </div>
+
+                    ${topScores.length > 0 ? `
+                        <h3 style="color: #9d00ff; font-size: 24px; margin-bottom: 15px; text-shadow: 0 0 15px rgba(157,0,255,0.8);">TOP SCORES</h3>
+                        <div style="background: rgba(0,212,255,0.05); border: 2px solid #00d4ff; border-radius: 12px; padding: 15px; text-align: center; max-width: 400px;">
+                            ${topScores.map((s, i) => `
+                                <div style="margin: 8px 0; color: #00d4ff; display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-weight: bold; color: #ff6b00;">#${i + 1}</span>
+                                    <span style="font-weight: bold; color: #ffff00;">${s.score}</span>
+                                    <span style="font-size: 12px; color: #9d00ff;">${s.combo}x</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : '<p style="color: #ff00ff;">No scores yet. Play to get started!</p>'}
+
+                    <button id="backBtn" style="margin-top: 30px; padding: 12px 30px; background: linear-gradient(135deg, #00d4ff, #9d00ff); color: #050008; border: 2px solid #00d4ff; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; text-transform: uppercase;">BACK</button>
+                `;
+
+                document.body.appendChild(statsDiv);
+                document.getElementById('backBtn').addEventListener('click', () => {
+                    audioManager.playClickSound();
+                    statsDiv.remove();
+                });
+            }
+
+            showSettings(menuDiv) {
+                const settingsDiv = document.createElement('div');
+                settingsDiv.style.cssText = `
+                    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                    background: rgba(5,0,8,0.95); z-index: 300;
+                    display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px;
+                `;
+                
+                settingsDiv.innerHTML = `
+                    <h2 style="color: #00d4ff; font-size: 36px; margin-bottom: 40px; text-shadow: 0 0 20px rgba(0,212,255,0.8);">SETTINGS</h2>
+                    
+                    <div style="background: rgba(0,212,255,0.05); border: 2px solid #9d00ff; border-radius: 12px; padding: 30px; text-align: center; max-width: 400px;">
+                        <div style="margin: 20px 0; text-align: left;">
+                            <label style="display: block; color: #00d4ff; font-weight: bold; margin-bottom: 10px;">Master Volume</label>
+                            <input type="range" min="0" max="100" value="${Math.round(audioManager.getMasterVolume() * 100)}" id="volumeSlider" style="width: 100%;">
+                        </div>
+
+                        <div style="margin: 20px 0;">
+                            <label style="display: flex; align-items: center; color: #00d4ff; font-weight: bold; cursor: pointer;">
+                                <input type="checkbox" id="audioToggle" ${audioManager.isEnabled() ? 'checked' : ''} style="margin-right: 10px; width: 20px; height: 20px;">
+                                Enable Sound
+                            </label>
+                        </div>
+
+                        <button id="resetBtn" style="margin-top: 20px; padding: 10px 20px; background: linear-gradient(135deg, #ff0000, #ff6b00); color: white; border: 2px solid #ff0000; border-radius: 8px; font-weight: bold; cursor: pointer; text-transform: uppercase;">Reset Data</button>
+
+                        <p style="color: #9d00ff; font-size: 12px; margin-top: 15px; text-transform: uppercase;">v1.0.0</p>
+                    </div>
+
+                    <button id="backBtn" style="margin-top: 30px; padding: 12px 30px; background: linear-gradient(135deg, #00d4ff, #9d00ff); color: #050008; border: 2px solid #00d4ff; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; text-transform: uppercase;">BACK</button>
+                `;
+
+                document.body.appendChild(settingsDiv);
+
+                document.getElementById('volumeSlider').addEventListener('change', (e) => {
+                    audioManager.setMasterVolume(e.target.value / 100);
+                });
+
+                document.getElementById('audioToggle').addEventListener('change', (e) => {
+                    audioManager.setEnabled(e.target.checked);
+                });
+
+                document.getElementById('resetBtn').addEventListener('click', () => {
+                    if (confirm('Reset all data? This cannot be undone.')) {
+                        scoreManager.reset();
+                        alert('Data reset!');
+                        settingsDiv.remove();
+                        audioManager.playClickSound();
+                    }
+                });
+
+                document.getElementById('backBtn').addEventListener('click', () => {
+                    audioManager.playClickSound();
+                    settingsDiv.remove();
+                });
+            }
+        }
+
+        /* ========================================
+           GAME SCENE
+           Core gameplay loop and mechanics
+           ======================================== */
+
+        class GameScene extends Phaser.Scene {
+            constructor() {
+                super('Game');
+            }
+
+            init(data) {
+                this.isReviving = data?.revive || false;
+                this.previousScore = data?.previousScore || 0;
+            }
+
+            create() {
+                this.score = this.isReviving ? this.previousScore : 0;
+                this.combo = 0;
+                this.difficulty = 1;
+                this.gameSpeed = PLAYER_CONFIG.baseSpeed;
+                this.shapesPassed = 0;
+                this.gameActive = true;
+                this.isPaused = false;
+
+                this.particleManager = new ParticleManager(this);
+
+                this.graphicsPlayer = this.make.graphics({ x: 0, y: 0, add: true });
+                this.graphicsParticles = this.make.graphics({ x: 0, y: 0, add: true });
+                this.graphicsWalls = this.make.graphics({ x: 0, y: 0, add: true });
+
+                this.playerX = PLAYER_CONFIG.startX;
+                this.playerY = PLAYER_CONFIG.startY;
+                this.playerShape = SHAPES.CIRCLE;
+                this.shapeIndex = 0;
+                this.playerSize = PLAYER_CONFIG.size;
+
+                this.walls = [];
+                this.nextWallTime = 0;
+                this.wallSpawnRate = WALL_CONFIG.initialSpawnRate;
+
+                this.createHUD();
+
+                this.input.keyboard.on('keydown-SPACE', () => this.morphShape());
+                this.input.mouse.on('pointerdown', () => this.morphShape());
+                this.input.keyboard.on('keydown-ESC', () => this.pauseGame());
+
+                this.time.addEvent({ delay: 16, callback: this.update, callbackScope: this, loop: true });
+
+                console.log('Game started');
+            }
+
+            createHUD() {
+                const hudDiv = document.createElement('div');
+                hudDiv.className = 'hud-container';
+                hudDiv.innerHTML = `
+                    <div class="hud-score" id="scoreDisplay">0</div>
+                    <div class="hud-combo" id="comboDisplay">COMBO: 0x</div>
+                    <div class="hud-high-score" id="highScoreDisplay">BEST: ${scoreManager.getHighScore()}</div>
+                `;
+                document.body.appendChild(hudDiv);
+
+                const pauseBtn = document.createElement('button');
+                pauseBtn.className = 'pause-btn';
+                pauseBtn.textContent = 'PAUSE';
+                pauseBtn.addEventListener('click', () => this.pauseGame());
+                document.body.appendChild(pauseBtn);
+
+                this.hudDiv = hudDiv;
+                this.pauseBtn = pauseBtn;
+            }
+
+            updateHUD() {
+                document.getElementById('scoreDisplay').textContent = this.formatNumber(this.score);
+                document.getElementById('comboDisplay').textContent = `COMBO: ${this.combo}x`;
+            }
+
+            formatNumber(num) {
+                return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            }
+
+            morphShape() {
+                if (!this.gameActive) return;
+
+                this.shapeIndex = (this.shapeIndex + 1) % SHAPE_ORDER.length;
+                this.playerShape = SHAPE_ORDER[this.shapeIndex];
+
+                audioManager.playMorphSound();
+            }
+
+            update(time, delta) {
+                if (!this.gameActive) return;
+
+                this.updateWalls(delta);
+
+                this.nextWallTime += delta;
+                if (this.nextWallTime >= this.wallSpawnRate * 1000) {
+                    this.spawnWall();
+                    this.nextWallTime = 0;
+                }
+
+                this.updateDifficulty();
+
+                this.particleManager.update(delta);
+
+                this.render();
+
+                this.updateHUD();
+            }
+
+            updateWalls(delta) {
+                const moveDistance = (this.gameSpeed * delta) / 1000;
+
+                for (let i = this.walls.length - 1; i >= 0; i--) {
+                    const wall = this.walls[i];
+                    wall.y += moveDistance;
+
+                    if (wall.y >= PLAYER_CONFIG.startY - 50 && wall.y <= PLAYER_CONFIG.startY + 50) {
+                        if (!wall.checked) {
+                            wall.checked = true;
+                            this.checkCollision(wall);
+                        }
+                    }
+
+                    if (wall.y > this.cameras.main.height) {
+                        this.walls.splice(i, 1);
+                    }
+                }
+            }
+
+            spawnWall() {
+                const randomShape = SHAPE_ORDER[Phaser.Math.Between(0, SHAPE_ORDER.length - 1)];
+                const holeX = Phaser.Math.Between(100, this.cameras.main.width - 100);
+                const holeWidth = Phaser.Math.Between(WALL_CONFIG.holeMinSize, WALL_CONFIG.holeMaxSize);
+
+                const wall = {
+                    y: -100,
+                    shape: randomShape,
+                    holeX: holeX,
+                    holeWidth: holeWidth,
+                    checked: false
+                };
+
+                this.walls.push(wall);
+            }
+
+            checkCollision(wall) {
+                const playerX = PLAYER_CONFIG.startX;
+                const playerY = PLAYER_CONFIG.startY;
+                const holeY = wall.y;
+                const holeHeight = 30;
+
+                const shapeMatches = this.playerShape === wall.shape;
+                const positionCorrect = Math.abs(playerX - (wall.holeX + wall.holeWidth / 2)) < wall.holeWidth / 2;
+
+                if (shapeMatches && positionCorrect) {
+                    this.onWallPass(wall);
+                } else {
+                    this.onCrash();
+                }
+            }
+
+            onWallPass(wall) {
+                this.shapesPassed++;
+                this.combo++;
+
+                const baseScore = GAME_SETTINGS.baseScore;
+                const comboMultiplier = Math.pow(GAME_SETTINGS.comboMultiplier, this.combo - 1);
+                const scoreGain = Math.round(baseScore * comboMultiplier);
+                this.score += scoreGain;
+
+                const isPerfect = this.checkPerfect(wall);
+                if (isPerfect) {
+                    this.score += GAME_SETTINGS.perfectBonus;
+                    audioManager.playPerfectSound();
+                } else {
+                    audioManager.playSuccessSound();
+                }
+
+                this.particleManager.emit(
+                    PLAYER_CONFIG.startX,
+                    PLAYER_CONFIG.startY,
+                    10,
+                    'success',
+                    0x00ff00
+                );
+
+                if (this.combo % 5 === 0) {
+                    audioManager.playComboSound(this.combo);
+                    this.cameras.main.shake(150, 0.01);
+                }
+            }
+
+            checkPerfect(wall) {
+                const playerX = PLAYER_CONFIG.startX;
+                const wallCenterX = wall.holeX + wall.holeWidth / 2;
+                const tolerance = wall.holeWidth * GAME_SETTINGS.perfectWindow;
+                return Math.abs(playerX - wallCenterX) < tolerance;
+            }
+
+            onCrash() {
+                this.gameActive = false;
+
+                audioManager.playCrashSound();
+                this.cameras.main.shake(300, 0.02);
+
+                this.particleManager.emit(
+                    PLAYER_CONFIG.startX,
+                    PLAYER_CONFIG.startY,
+                    30,
+                    'crash',
+                    0xff0000
+                );
+
+                this.hudDiv.remove();
+                this.pauseBtn.remove();
+
+                this.time.delayedCall(500, () => {
+                    this.scene.start('GameOver', {
+                        score: this.score,
+                        combo: this.combo,
+                        shapeCount: this.shapesPassed
+                    });
+                });
+            }
+
+            updateDifficulty() {
+                const newDifficulty = Math.floor(this.score / GAME_SETTINGS.scorePerDifficultyLevel) + 1;
+                if (newDifficulty !== this.difficulty) {
+                    this.difficulty = Math.min(newDifficulty, GAME_SETTINGS.maxDifficulty);
+                    this.gameSpeed = PLAYER_CONFIG.baseSpeed + (this.difficulty * PLAYER_CONFIG.speedIncrement);
+                    this.wallSpawnRate = Math.max(
+                        WALL_CONFIG.minSpawnRate,
+                        WALL_CONFIG.initialSpawnRate * Math.pow(GAME_SETTINGS.difficultyScaling, this.difficulty - 1)
+                    );
+                }
+            }
+
+            pauseGame() {
+                audioManager.playClickSound();
+                this.gameActive = false;
+                this.scene.launch('Pause');
+            }
+
+            render() {
+                this.graphicsPlayer.clear();
+                this.graphicsWalls.clear();
+
+                this.drawBackgroundGrid();
+                this.drawWalls();
+                this.drawPlayer();
+
+                this.particleManager.render(this.graphicsParticles);
+            }
+
+            drawBackgroundGrid() {
+                this.graphicsWalls.lineStyle(1, 0x9d00ff, 0.1);
+                const gridSize = 80;
+                for (let x = 0; x < this.cameras.main.width; x += gridSize) {
+                    this.graphicsWalls.beginPath();
+                    this.graphicsWalls.moveTo(x, 0);
+                    this.graphicsWalls.lineTo(x, this.cameras.main.height);
+                    this.graphicsWalls.strokePath();
+                }
+            }
+
+            drawWalls() {
+                for (const wall of this.walls) {
+                    this.graphicsWalls.fillStyle(0x00d4ff, 0.2);
+                    this.graphicsWalls.fillRect(0, wall.y, this.cameras.main.width, WALL_CONFIG.height);
+
+                    this.graphicsWalls.fillStyle(0x050008, 1);
+                    this.graphicsWalls.fillRect(wall.holeX, wall.y + 10, wall.holeWidth, 20);
+
+                    this.graphicsWalls.lineStyle(2, 0x9d00ff);
+                    this.graphicsWalls.strokeRect(wall.holeX, wall.y + 10, wall.holeWidth, 20);
+                }
+            }
+
+            drawPlayer() {
+                const x = PLAYER_CONFIG.startX;
+                const y = PLAYER_CONFIG.startY;
+
+                this.graphicsPlayer.fillStyle(0x00d4ff, 0.1);
+                this.graphicsPlayer.fillCircle(x, y, PLAYER_CONFIG.glowRadius);
+
+                const shapeFunc = SHAPE_DEFINITIONS[this.playerShape];
+                shapeFunc(this.graphicsPlayer, x, y, this.playerSize, 0x00d4ff);
+
+                this.graphicsPlayer.lineStyle(2, 0x9d00ff);
+                if (this.playerShape === SHAPES.CIRCLE) {
+                    this.graphicsPlayer.strokeCircle(x, y, this.playerSize / 2);
+                }
+            }
+        }
+
+        /* ========================================
+           GAME OVER SCENE
+           Game over screen with rewarded ad revive
+           ======================================== */
+
+        class GameOverScene extends Phaser.Scene {
+            constructor() {
+                super('GameOver');
+            }
+
+            init(data) {
+                this.finalScore = data.score || 0;
+                this.finalCombo = data.combo || 0;
+                this.shapeCount = data.shapeCount || 0;
+            }
+
+            create() {
+                audioManager.playCrashSound();
+
+                scoreManager.addScore(this.finalScore, this.finalCombo, this.shapeCount);
+
+                const gameOverDiv = document.createElement('div');
+                gameOverDiv.className = 'game-over-container';
+                gameOverDiv.innerHTML = `
+                    <div class="game-over-content">
+                        <h2>GAME OVER</h2>
+                        
+                        <div class="score-display">
+                            <div class="score-label">FINAL SCORE</div>
+                            <div class="score-value">${this.formatNumber(this.finalScore)}</div>
+                        </div>
+                        
+                        <div class="combo-display">
+                            <div class="score-label">MAX COMBO</div>
+                            <div class="combo-value">${this.finalCombo}x</div>
+                        </div>
+                        
+                        <div class="score-display">
+                            <div class="score-label">HIGH SCORE</div>
+                            <div class="score-value">${this.formatNumber(scoreManager.getHighScore())}</div>
+                        </div>
+                        
+                        <div class="game-over-buttons">
+                            <button class="revive-btn" id="reviveBtn">🎁 REVIVE</button>
+                            <button id="restartBtn">RESTART</button>
+                            <button id="menuBtn">MAIN MENU</button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(gameOverDiv);
+
+                document.getElementById('reviveBtn').addEventListener('click', () => {
+                    audioManager.playClickSound();
+                    this.attemptRevive(gameOverDiv);
+                });
+
+                document.getElementById('restartBtn').addEventListener('click', () => {
+                    audioManager.playClickSound();
+                    gameOverDiv.remove();
+                    this.restartGame();
+                });
+
+                document.getElementById('menuBtn').addEventListener('click', () => {
+                    audioManager.playClickSound();
+                    gameOverDiv.remove();
+
+                    if (window.PokiSDK && window.PokiSDK.gameplayStop) {
+                        window.PokiSDK.gameplayStop();
+                    }
+
+                    this.scene.start('Menu');
+                });
+            }
+
+            attemptRevive(gameOverDiv) {
+                if (typeof window.PokiSDK !== 'undefined' && window.PokiSDK.rewardedBreak) {
+                    PokiSDK.rewardedBreak(() => {
+                        console.log('Revived from ad');
+                        gameOverDiv.remove();
+                        this.reviveGame();
+                    });
+                } else {
+                    alert('Revive feature requires Poki SDK');
+                    console.log('Revived (local testing)');
+                    gameOverDiv.remove();
+                    this.reviveGame();
+                }
+            }
+
+            reviveGame() {
+                this.scene.start('Game', { revive: true, previousScore: this.finalScore });
+            }
+
+            restartGame() {
+                this.scene.start('Game', { revive: false });
+            }
+
+            formatNumber(num) {
+                return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            }
+        }
+
+        /* ========================================
+           PAUSE SCENE
+           Overlay for paused game state
+           ======================================== */
+
+        class PauseScene extends Phaser.Scene {
+            constructor() {
+                super('Pause');
+            }
+
+            create() {
+                audioManager.playClickSound();
+
+                const width = this.cameras.main.width;
+                const height = this.cameras.main.height;
+
+                const pauseDiv = document.createElement('div');
+                pauseDiv.className = 'pause-overlay';
+                pauseDiv.innerHTML = `
+                    <div class="pause-content">
+                        <h2>PAUSED</h2>
+                        <button id="resumeBtn">RESUME</button>
+                        <button id="menuBtn">MAIN MENU</button>
+                    </div>
+                `;
+                document.body.appendChild(pauseDiv);
+
+                document.getElementById('resumeBtn').addEventListener('click', () => {
+                    audioManager.playClickSound();
+                    pauseDiv.remove();
+                    this.scene.resume('Game');
+                    this.scene.stop('Pause');
+                });
+
+                document.getElementById('menuBtn').addEventListener('click', () => {
+                    audioManager.playClickSound();
+                    pauseDiv.remove();
+
+                    if (window.PokiSDK && window.PokiSDK.gameplayStop) {
+                        window.PokiSDK.gameplayStop();
+                    }
+
+                    this.scene.stop('Game');
+                    this.scene.stop('Pause');
+                    this.scene.start('Menu');
+                });
+            }
+        }
+
+        /* ========================================
+           INITIALIZE THE GAME
+           Main entry point
+           ======================================== */
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof Phaser === 'undefined') {
+                console.error('Phaser not loaded!');
+                return;
+            }
+
+            const game = new Phaser.Game(GAME_CONFIG);
+            window.morphDashGame = game;
+
+            window.addEventListener('resize', () => {
+                if (game && game.scale) {
+                    game.scale.refresh();
+                }
+            });
+
+            console.log('Morph Dash initialized successfully');
+        });
+    </script>
+</body>
+</html>
